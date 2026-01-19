@@ -1,0 +1,15 @@
+[package]
+name = "AcidLuna"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+image = "0.25.9"
+menu = "0.6.1"
+tray-icon = "0.21.3"
+windows = { version = "0.52", features = [
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_Foundation",
+    "Win32_System_LibraryLoader"
+] }
