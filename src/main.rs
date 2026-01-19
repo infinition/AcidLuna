@@ -44,22 +44,29 @@ unsafe extern "system" fn keyboard_hook_proc(code: i32, w_param: WPARAM, l_param
     unsafe { CallNextHookEx(H_HOOK, code, w_param, l_param) }
 }
 
-fn load_icon(path: &std::path::Path) -> tray_icon::Icon {
-    let (icon_rgba, icon_width, icon_height) = {
-        let image = image::open(path)
-            .expect("Failed to open icon path")
-            .into_rgba8();
-        let (width, height) = image.dimensions();
-        let rgba = image.into_raw();
-        (rgba, width, height)
-    };
-    tray_icon::Icon::from_rgba(icon_rgba, icon_width, icon_height).expect("Failed to open icon")
+fn create_generic_icon() -> tray_icon::Icon {
+    let width = 32;
+    let height = 32;
+    let mut rgba = Vec::with_capacity((width * height * 4) as usize);
+    for y in 0..height {
+        for x in 0..width {
+            // Créer un simple cercle blanc pour simuler une lune
+            let dx = x as i32 - 16;
+            let dy = y as i32 - 16;
+            let distance_sq = dx * dx + dy * dy;
+            if distance_sq < 14 * 14 {
+                rgba.extend_from_slice(&[255, 255, 255, 255]);
+            } else {
+                rgba.extend_from_slice(&[0, 0, 0, 0]);
+            }
+        }
+    }
+    tray_icon::Icon::from_rgba(rgba, width, height).expect("Failed to create generic icon")
 }
 
 fn main() {
-    // --- CHARGEMENT DE L'ICÔNE ---
-    let icon_path = std::path::Path::new("src/icon.png");
-    let icon = load_icon(icon_path);
+    // --- CRÉATION DE L'ICÔNE GÉNÉRIQUE ---
+    let icon = create_generic_icon();
 
     // --- CRÉATION DU MENU ---
     let tray_menu = Menu::new();
@@ -110,9 +117,8 @@ fn main() {
         let mut msg = std::mem::zeroed();
         while GetMessageA(&mut msg, None, 0, 0).into() {
             // Gestion des événements de la tray icon
-            if let Ok(event) = TrayIconEvent::receiver().try_recv() {
-                // Si on veut gérer le clic gauche sur l'icône par exemple
-                // println!("{:?}", event);
+            if let Ok(_event) = TrayIconEvent::receiver().try_recv() {
+                // Événements tray ignorés pour l'instant
             }
             
             // Gestion des événements du menu
@@ -126,5 +132,6 @@ fn main() {
         }
     }
 }
+
 
 
