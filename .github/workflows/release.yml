@@ -27,8 +27,8 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: AcidLuna-exe
-        path: target/release/genesis_project.exe
+        name: AcidLuna-binary
+        path: target/release/AcidLuna.exe
 
   release:
     needs: build
@@ -38,11 +38,12 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: AcidLuna-exe
+          name: AcidLuna-binary
+          path: .
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: genesis_project.exe
+          files: AcidLuna.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
