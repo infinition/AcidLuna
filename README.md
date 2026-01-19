@@ -1,11 +1,22 @@
 # AcidLuna
 
-AcidLuna is a Windows-based project built with Rust. It leverages the `windows` crate to interact with Win32 APIs for keyboard, mouse, and window management. Created to solve the lack of drag and drop support and right click support using LunaDisplay from iPad to windows.
+AcidLuna is a lightweight background utility for Windows, built in Rust, designed to enhance the experience of using **LunaDisplay** with an iPad. 
+
+It specifically solves the lack of native drag-and-drop and right-click support when using an iPad as a secondary display for Windows.
+
+## How it Works
+
+AcidLuna runs silently in your system tray (look for the crescent moon icon) and intercepts specific keyboard inputs to simulate mouse actions:
+
+- **Drag & Drop**: Hold the **Left CTRL** key to simulate holding down the Left Mouse Button. This allows you to perform drag-and-drop operations easily using the iPad's touch interface or Apple Pencil.
+- **Right Click**: Press the **Globe key** (which Windows maps to **Caps Lock**) to trigger a Right Click at the current cursor position. AcidLuna intercepts this key to prevent toggling Caps Lock while providing the right-click functionality.
 
 ## Features
 
-- Native Windows API integration.
-- Built with Rust for performance and safety.
+- **Stealth Mode**: Runs without a terminal window, living entirely in the system tray.
+- **System Tray Menu**: Right-click the crescent moon icon to exit the application.
+- **Low Latency**: Built with Rust and native Win32 hooks for near-instant response.
+- **Custom Icon**: Integrated crescent moon icon for both the executable and the tray.
 
 ## Prerequisites
 
