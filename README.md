@@ -1,3 +1,5 @@
+<img width="677" height="369" alt="Gemini_Generated_Image_9dokav9dokav9dok-removebg-preview" src="https://github.com/user-attachments/assets/26994d6e-a938-48e9-9eaf-c5db98f7ee7d" />
+
 # AcidLuna
 
 AcidLuna is a lightweight background utility for Windows, built in Rust, designed to enhance the experience of using **LunaDisplay** with an iPad. 
