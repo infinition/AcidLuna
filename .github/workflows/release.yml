@@ -8,6 +8,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: write
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -16,34 +19,79 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+      # 1️⃣ Checkout
+      - uses: actions/checkout@v4
 
-    - name: Install Rust toolchain
-      uses: dtolnay/rust-toolchain@stable
+      # 2️⃣ Rust toolchain
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
 
-    - name: Build
-      run: cargo build --release --verbose
+      # 3️⃣ Build release binary
+      - name: Build
+        run: cargo build --release --verbose
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: AcidLuna-binary
-        path: target/release/AcidLuna.exe
+      # 4️⃣ Upload binary artifact
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AcidLuna-windows
+          path: target/release/AcidLuna.exe
 
   release:
     needs: build
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
+
     steps:
+      # 5️⃣ Download artifact
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: AcidLuna-binary
+          name: AcidLuna-windows
           path: .
 
+      # 6️⃣ Generate release notes
+      - name: Generate release notes
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+
+          if [ -z "$LAST_TAG" ]; then
+            echo "🚀 Initial release" >> $GITHUB_ENV
+          else
+            echo "### ✨ Features" >> $GITHUB_ENV
+            git log $LAST_TAG..HEAD --pretty=format:"- %s" | grep '^feat' | sed 's/^feat: //' >> $GITHUB_ENV || true
+
+            echo "" >> $GITHUB_ENV
+            echo "### 🐛 Fixes" >> $GITHUB_ENV
+            git log $LAST_TAG..HEAD --pretty=format:"- %s" | grep '^fix' | sed 's/^fix: //' >> $GITHUB_ENV || true
+
+            echo "" >> $GITHUB_ENV
+            echo "### ⚡ Performance / Refactor" >> $GITHUB_ENV
+            git log $LAST_TAG..HEAD --pretty=format:"- %s" | grep -E '^(perf|refactor)' | sed 's/^[a-z]*: //' >> $GITHUB_ENV || true
+
+            echo "" >> $GITHUB_ENV
+            echo "### 🧹 Other changes" >> $GITHUB_ENV
+            git log $LAST_TAG..HEAD --pretty=format:"- %s" | grep -vE '^(feat|fix|perf|refactor):' >> $GITHUB_ENV || true
+          fi
+
+          echo "EOF" >> $GITHUB_ENV
+
+      # 7️⃣ Create GitHub Release
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          name: ${{ github.ref_name }}
+          body: |
+            ## 🦀 AcidLuna – Windows Binary
+
+            ${{ env.RELEASE_NOTES }}
+
+            ---
+            📦 **Binary**: `AcidLuna.exe`  
+            🖥️ **Platform**: Windows (x64)  
+            🛠️ **Built with**: Rust (stable)
           files: AcidLuna.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
