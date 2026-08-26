@@ -1,4 +1,6 @@
-<img width="677" height="369" alt="AcidLuna" src="https://github.com/user-attachments/assets/26994d6e-a938-48e9-9eaf-c5db98f7ee7d" />
+<p align="center">
+  <img src=".github/AcidLuna.png" alt="AcidLuna icon" width="677" height="369" />
+</p>
 
 # AcidLuna
 
